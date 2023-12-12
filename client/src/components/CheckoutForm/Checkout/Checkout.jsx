@@ -9,22 +9,21 @@ import useStyles from './styles';
 
 const steps = ['Shipping address', 'Payment details'];
 
-const Checkout = ({ cart, onCaptureCheckout, order, error }) => {
+const Checkout = ({ cart, onCaptureCheckout, order, error, isLoggedIn }) => {
   const [checkoutToken, setCheckoutToken] = useState(null);
   const [activeStep, setActiveStep] = useState(0);
   const [shippingData, setShippingData] = useState({});
   const classes = useStyles();
   const history = useHistory();
 
-  const nextStep = () => setActiveStep((prevActiveStep) => prevActiveStep + 1);
-  const backStep = () => setActiveStep((prevActiveStep) => prevActiveStep - 1);
-
   useEffect(() => {
-    if (cart.id) {
+    if (!isLoggedIn) {
+      // Redirect the user to the login page if not logged in
+      history.push('/login');
+    } else if (cart.id) {
       const generateToken = async () => {
         try {
           const token = await commerce.checkout.generateToken(cart.id, { type: 'cart' });
-
           setCheckoutToken(token);
         } catch {
           if (activeStep !== steps.length) history.push('/');
@@ -33,7 +32,10 @@ const Checkout = ({ cart, onCaptureCheckout, order, error }) => {
 
       generateToken();
     }
-  }, [cart]);
+  }, [cart, activeStep, history, isLoggedIn]);
+
+  const nextStep = () => setActiveStep((prevActiveStep) => prevActiveStep + 1);
+  const backStep = () => setActiveStep((prevActiveStep) => prevActiveStep - 1);
 
   const test = (data) => {
     setShippingData(data);

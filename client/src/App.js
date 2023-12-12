@@ -8,6 +8,7 @@ import Checkout from "./components/CheckoutForm/Checkout/Checkout";
 import ProductView from "./components/ProductView/ProductView";
 import Manga from "./components/Manga/Manga";
 import Footer from "./components/Footer/Footer";
+import Login from "./components/Login/Login";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "mdbreact/dist/css/mdb.css";
@@ -27,6 +28,8 @@ const App = () => {
   const [cart, setCart] = useState({});
   const [order, setOrder] = useState({});
   const [errorMessage, setErrorMessage] = useState("");
+  const [isLoggedIn, setIsLoggedIn] = useState(false); // Login status
+
 
   const fetchProducts = async () => {
     const { data } = await commerce.products.list();
@@ -160,6 +163,7 @@ const App = () => {
                     order={order}
                     onCaptureCheckout={handleCaptureCheckout}
                     error={errorMessage}
+                    isLoggedIn={isLoggedIn}
                   />
                 </Route>
                 <Route path="/product-view/:id" exact>
