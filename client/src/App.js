@@ -8,7 +8,9 @@ import Checkout from "./components/CheckoutForm/Checkout/Checkout";
 import ProductView from "./components/ProductView/ProductView";
 import Manga from "./components/Manga/Manga";
 import Footer from "./components/Footer/Footer";
-import Login from "./components/Login/Login";
+import Login from "./components/Auth/Login";
+import Register from "./components/Auth/Register";
+import VerifyAccount from "./components/Auth/verifyAccount";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "mdbreact/dist/css/mdb.css";
@@ -30,6 +32,13 @@ const App = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const [isLoggedIn, setIsLoggedIn] = useState(false); // Login status
 
+  const handleLoginSuccess = () => {
+    setIsLoggedIn(true);
+  };
+
+  const handleLogout = () => {
+    setIsLoggedIn(false);
+  };
 
   const fetchProducts = async () => {
     const { data } = await commerce.products.list();
@@ -139,6 +148,8 @@ const App = () => {
               <Navbar
                 totalItems={cart.total_items}
                 handleDrawerToggle={handleDrawerToggle}
+                isLoggedIn={isLoggedIn}
+                onLogout={handleLogout}
               />
               <Switch>
                 <Route exact path="/">
@@ -148,6 +159,18 @@ const App = () => {
                     onAddToCart={handleAddToCart}
                     handleUpdateCartQty
                   />
+                </Route>
+                <Route path='/login'>
+                  <Login onLoginSuccess={handleLoginSuccess} />
+                </Route>
+                <Route path='/register'>
+                  <Register />
+                </Route>
+                <Route path='/forgot-password'>
+                  <VerifyAccount />
+                  
+                  {/* <Register /> */}
+
                 </Route>
                 <Route exact path="/cart">
                   <Cart
@@ -193,7 +216,7 @@ const App = () => {
               </Switch>
             </div>
           </Router>
-          <Footer />
+          {window.location.pathname !== '/login' && window.location.pathname !== '/register' && window.location.pathname !== '/forgot-password' && <Footer />}
         </>
       ) : (
         <div className="loader">

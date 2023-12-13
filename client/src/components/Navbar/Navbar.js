@@ -7,11 +7,13 @@ import {
   Typography,
 } from "@material-ui/core";
 import { ShoppingCart } from "@material-ui/icons";
+import LockOpenIcon from '@material-ui/icons/LockOpen';
+import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import { Link } from "react-router-dom";
 import logo from "../../assets/circles.png";
 import useStyles from "./styles";
 
-const Navbar = ({ totalItems }) => {
+const Navbar = ({ totalItems, isLoggedIn, onLogout }) => {
   const classes = useStyles();
 
   return (
@@ -47,6 +49,29 @@ const Navbar = ({ totalItems }) => {
               </Badge>
             </IconButton>
           </div>
+
+          {isLoggedIn ? (
+            <div className={classes.button}>
+              <IconButton
+                onClick={onLogout}
+                aria-label="Logging out"
+                color="inherit"
+              >
+                <ExitToAppIcon />
+
+              </IconButton>
+            </div>
+          ) : (<div className={classes.button}>
+            <IconButton
+              component={Link}
+              to="/login"
+              aria-label="Logging in"
+              color="inherit"
+            >
+              <LockOpenIcon />
+
+            </IconButton>
+          </div>)}
         </Toolbar>
       </AppBar>
     </div>
