@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import {
-  Typography,
-  TextField,
-  Button,
-  Container,
-  Box
+    Typography,
+    TextField,
+    Button,
+    Container,
+    Box
 } from '@material-ui/core';
 
 const Register = () => {
@@ -51,15 +51,8 @@ const Register = () => {
             const data = await response.json();
 
             if (response.status === 201) {
-                setSuccessMessage('Registration successful. You will be redirected to login page in 10 seconds.');
-                const intervalId = setInterval(() => {
-                  setCountdown((prevCountdown) => prevCountdown - 1);
-                }, 1000);
-
-                setTimeout(() => {
-                  clearInterval(intervalId);
-                  window.location.href = '/login'; // Redirect to login page
-                }, 10000);
+                alert('Registration successful.'); // Show an alert message
+                window.location.href = '/login'; // Redirect to login page
             } else {
                 throw new Error(data.message || 'Error occurred during registration.');
             }
@@ -69,9 +62,9 @@ const Register = () => {
     };
 
     useEffect(() => {
-      if (countdown === 0) {
-        window.location.href = '/login'; // Redirect to login page
-      }
+        if (countdown === 0) {
+            window.location.href = '/login'; // Redirect to login page
+        }
     }, [countdown]);
 
     return (

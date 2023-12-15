@@ -8,9 +8,12 @@ import Checkout from "./components/CheckoutForm/Checkout/Checkout";
 import ProductView from "./components/ProductView/ProductView";
 import Manga from "./components/Manga/Manga";
 import Footer from "./components/Footer/Footer";
+import NotFound from "./NotFound"
 import Login from "./components/Auth/Login";
 import Register from "./components/Auth/Register";
+import RestoreAccount from "./components/Auth/restoreAccount";
 import VerifyAccount from "./components/Auth/verifyAccount";
+import ResetPassword from "./components/Auth/resetPassword"
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "mdbreact/dist/css/mdb.css";
@@ -167,10 +170,13 @@ const App = () => {
                   <Register />
                 </Route>
                 <Route path='/forgot-password'>
+                  <RestoreAccount />
+                </Route>
+                <Route path="/verify-account">
                   <VerifyAccount />
-                  
-                  {/* <Register /> */}
-
+                </Route>
+                <Route path="/reset-password">
+                  <ResetPassword />
                 </Route>
                 <Route exact path="/cart">
                   <Cart
@@ -213,15 +219,20 @@ const App = () => {
                     handleUpdateCartQty
                   />
                 </Route>
+                <Route path="*">
+                  <NotFound />
+                </Route>
               </Switch>
             </div>
           </Router>
-          {window.location.pathname !== '/login' && window.location.pathname !== '/register' && window.location.pathname !== '/forgot-password' && <Footer />}
+          
+          {window.location.pathname !== '*' && window.location.pathname !== '/login' && window.location.pathname !== '/register' && window.location.pathname !== '/forgot-password' && window.location.pathname !== '/verify-account' && window.location.pathname !== '/reset-password' && <Footer />}
         </>
       ) : (
-        <div className="loader">
-          <img src={loadingImg} alt="Loading" />
-        </div>
+          <div className="loader">
+            <img src={loadingImg} alt="Loading" />
+          </div>
+
       )}
     </div>
   );

@@ -40,12 +40,10 @@ const ResetPassword = () => {
 
         try {
             const response = await fetch('http://localhost:3010/resetAccount/reset-password', requestOptions);
-            const data = await response.json();
-
+            const data = await response.text();
             if (!response.ok) {
                 throw new Error(data.message || 'Error occurred during password reset.');
             }
-
             alert('Password reset successfully.');
             history.push('/login'); 
         } catch (error) {
@@ -54,7 +52,7 @@ const ResetPassword = () => {
     };
 
     return (
-        <Container maxWidth="sm">
+        <Container style={{ marginTop: '40px' }} maxWidth="sm">
             <Box my={4}>
                 <Typography variant="h4">Reset Password</Typography>
                 <form onSubmit={handleSubmit} noValidate>

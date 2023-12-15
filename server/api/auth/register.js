@@ -5,7 +5,7 @@ const { MongoClient } = require('mongodb');
 const router = express.Router();
 
 const uri = process.env.MONGODB_URI;
-const saltRounds = 10; 
+const saltRounds = parseInt(process.env.SALT_ROUNDS) || 10;
 
 router.post('/', async (req, res) => {
   try {

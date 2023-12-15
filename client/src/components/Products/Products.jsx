@@ -21,7 +21,6 @@ const Products = ({ products, onAddToCart, featureProducts }) => {
   const sectionRef = useRef(null);
 
   const handleInputClick = () => {
-    // Scrolls to the section when the input is clicked
     sectionRef.current.scrollIntoView({ behavior: "smooth" });
   };
 
@@ -104,6 +103,7 @@ const Products = ({ products, onAddToCart, featureProducts }) => {
           infiniteLoop={true}
           showArrows={true}
           showStatus={false}
+          showThumbs={false}
         >
           <div>
             <Link to="manga">
@@ -144,7 +144,7 @@ const Products = ({ products, onAddToCart, featureProducts }) => {
             <Grid
               className={classes.contentFeatured}
               container
-              justify="center"
+              justifyContent="center"
               spacing={1}
             >
               {featureProducts.map((product) => (
@@ -156,6 +156,7 @@ const Products = ({ products, onAddToCart, featureProducts }) => {
                   md={3}
                   lg={2}
                   id="pro"
+                  key={product.id}
                 >
                   <Product product={product} onAddToCart={onAddToCart} />
                 </Grid>
@@ -196,7 +197,7 @@ const Products = ({ products, onAddToCart, featureProducts }) => {
         <Grid
           className={classes.content}
           container
-          justify="center"
+          justifyContent="center"
           spacing={2}
         >
           {products
@@ -220,6 +221,7 @@ const Products = ({ products, onAddToCart, featureProducts }) => {
                 md={4}
                 lg={3}
                 id="pro"
+                key={product.id}
               >
                 <Product product={product} onAddToCart={onAddToCart} />
               </Grid>

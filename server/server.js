@@ -18,9 +18,10 @@ const resetAccountRouter = require('./api/auth/resetAccount.js')
 
 const app = express();
 app.use(cors({
-  origin: 'http://localhost:3000', // Replace with the actual origin of your client-side application
+  origin: 'http://localhost:3000', 
   credentials: true, // Allow credentials (cookies) to be sent with requests
 }));
+
 app.use(cookieParser());
 
 const port = process.env.PORT || 3010;

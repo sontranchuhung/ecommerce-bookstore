@@ -27,28 +27,35 @@ const VerifyAccount = () => {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email, otp })
         };
+        console.log('Request Options:', requestOptions);
 
         try {
             const response = await fetch('http://localhost:3010/resetAccount/verify-otp', requestOptions);
-            const data = await response.json();
+
+            console.log('Response Status:', response.status); // Log the response status
 
             if (!response.ok) {
-                throw new Error(data.message || 'Error occurred during OTP verification.');
+                throw new Error('Error occurred during OTP verification.');
             }
 
-            history.push('/change-password', { email });
+            const responseData = await response.text(); // Parse the response content as text
+
+            console.log('Response Data:', responseData); // Log the response data
+
+            if (responseData.includes('OTP verified successfully')) {
+                history.push('/reset-password', { email });
+            } else {
+                setError('Authentication failed: ' + responseData);
+            }
         } catch (error) {
+            console.error('Error:', error);
             setError(error.message);
         }
     };
 
-    if (!email) {
-        return <p>No email provided.</p>;
-    }
-
     return (
-       
-        <Container maxWidth="sm">
+
+        <Container style={{ marginTop: '40px' }} maxWidth="sm">
             <Box my={4}>
                 <Typography variant="h4">Verify Account</Typography>
                 <Typography variant="subtitle1">{`Email: ${email}`}</Typography>

@@ -16,7 +16,7 @@ const RestoreAccount = () => {
         }
 
         try {
-            const response = await fetch('http://localhost:3010/resetAccount/send-opt', {
+            const response = await fetch('http://localhost:3010/resetAccount/send-otp', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -25,7 +25,7 @@ const RestoreAccount = () => {
             });
 
             if (response.ok) {
-                history.push('/verifyAccount', { email, step: 'verify' });
+                history.push('/verify-account', { email, step: 'verify' });
             } else {
                 alert('Failed to send OTP. Please try again later.');
             }
@@ -36,7 +36,7 @@ const RestoreAccount = () => {
     };
 
     return (
-        <Container maxWidth="sm">
+        <Container style={{ marginTop: '40px' }} maxWidth="sm">
             <Box my={4}>
                 <Typography variant="h4">Restore Account</Typography>
                 <form onSubmit={handleSubmit} noValidate>
