@@ -39,7 +39,7 @@ const ResetPassword = () => {
         };
 
         try {
-            const response = await fetch('http://localhost:3010/resetAccount/reset-password', requestOptions);
+            const response = await fetch('http://localhost:3010/auth/resetAccount/reset-password', requestOptions);
             const data = await response.text();
             if (!response.ok) {
                 throw new Error(data.message || 'Error occurred during password reset.');

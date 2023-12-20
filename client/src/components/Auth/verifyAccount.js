@@ -30,7 +30,7 @@ const VerifyAccount = () => {
         console.log('Request Options:', requestOptions);
 
         try {
-            const response = await fetch('http://localhost:3010/resetAccount/verify-otp', requestOptions);
+            const response = await fetch('http://localhost:3010/auth/resetAccount/verify-otp', requestOptions);
 
             console.log('Response Status:', response.status); // Log the response status
 

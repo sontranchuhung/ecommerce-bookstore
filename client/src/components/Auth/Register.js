@@ -29,37 +29,43 @@ const Register = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
-
+      
         if (!isValidEmail(formData.email)) {
-            setError('Invalid email address.');
-            return;
+          setError('Invalid email address.');
+          return;
         }
-
+      
         if (formData.password !== formData.confirmPassword) {
-            setError('Passwords do not match.');
-            return;
+          setError('Passwords do not match.');
+          return;
         }
-
+      
         const requestOptions = {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email: formData.email, password: formData.password })
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: formData.email, password: formData.password })
         };
-
+      
         try {
-            const response = await fetch('http://localhost:3010/register', requestOptions);
-            const data = await response.json();
-
-            if (response.status === 201) {
-                alert('Registration successful.'); // Show an alert message
-                window.location.href = '/login'; // Redirect to login page
+          const response = await fetch('http://localhost:3010/auth/register', requestOptions);
+          const data = await response.json();
+      
+          if (response.status === 201) {
+            alert('Registration successful.'); // Show an alert message
+            window.location.href = '/login'; // Redirect to login page
+          } else {
+            // 409 Conflict status code
+            if (response.status === 409) {
+              setError('This email has already been registered.');
             } else {
-                throw new Error(data.message || 'Error occurred during registration.');
+              throw new Error(data.message || 'Error occurred during registration.');
             }
+          }
         } catch (error) {
-            setError(error.message);
+          setError(error.message);
         }
-    };
+      };
+      
 
     useEffect(() => {
         if (countdown === 0) {

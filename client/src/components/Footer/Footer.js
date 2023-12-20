@@ -19,18 +19,7 @@ const Footer = () => {
               cart and finally purchase using credit card transaction.
             </p>
           </MDBCol>
-          <hr className="w-100 clearfix d-md-none" />
-          <MDBCol md="2" lg="2" xl="2" className="mx-auto mt-3">
-            <h6 className="text-uppercase mb-4 font-weight-bold">
-              <strong>Products</strong>
-            </h6>
-            <p>
-              <a href="#">Book-IT</a>
-            </p>
-            <p>
-              <a href="https://akshatjalan.github.io/akshat/">Portfolio</a>
-            </p>
-          </MDBCol>
+          
 
           <hr className="w-100 clearfix d-md-none" />
           <MDBCol md="4" lg="3" xl="3" className="mx-auto mt-3">
@@ -38,7 +27,7 @@ const Footer = () => {
               <strong>Contact</strong>
             </h6>
             <p>
-              <i className="fa fa-envelope mr-3" /> &nbsp;jalanakshat2@gmail.com
+              <i className="fa fa-envelope mr-3" /> &nbsp;example@gmail.com
             </p>
             <p>
               <a
@@ -52,19 +41,12 @@ const Footer = () => {
         </MDBRow>
         <hr />
         <MDBRow className="d-flex align-items-center">
-          <MDBCol md="8" lg="8">
-            <p className="text-center text-md-left grey-text">
-              &copy; {new Date().getFullYear()} Made by
-              <a href=""> Akshat Jalan </a>
-            </p>
-          </MDBCol>
-          <MDBCol md="4" lg="4" className="ml-lg-0">
             <div className="text-center text-md-right">
               <ul className="list-unstyled list-inline">
                 <li className="list-inline-item">
                   <a
                     className="btn-floating btn-sm rgba-white-slight mx-1"
-                    href="http://github.com/Akshatjalan"
+                    href="http://github.com/"
                   >
                     <i className="fab fa-github" />
                   </a>
@@ -72,7 +54,7 @@ const Footer = () => {
                 <li className="list-inline-item">
                   <a
                     className="btn-floating btn-sm rgba-white-slight mx-1"
-                    href="https://www.linkedin.com/in/akshat-jalan/"
+                    href="https://www.linkedin.com/"
                   >
                     <i className="fab fa-linkedin-in" />
                   </a>
@@ -80,14 +62,13 @@ const Footer = () => {
                 <li className="list-inline-item">
                   <a
                     className="btn-floating btn-sm rgba-white-slight mx-1"
-                    href="https://www.instagram.com/akshatxjalan/"
+                    href="https://www.instagram.com/"
                   >
                     <i className="fab fa-instagram" />
                   </a>
                 </li>
               </ul>
             </div>
-          </MDBCol>
         </MDBRow>
       </MDBContainer>
     </MDBFooter>

@@ -45,7 +45,7 @@ const Login = ({ onLoginSuccess }) => {
     console.log('Trying to fetch a valid token...');
 
     document.cookie = `token=${token}; path=/; secure; SameSite=None`;
-    fetch('http://localhost:3010/validateLoginToken', {
+    fetch('http://localhost:3010/auth/loginToken', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -81,7 +81,7 @@ const Login = ({ onLoginSuccess }) => {
     try {
       console.log('Start fetch login...');
 
-      const response = await fetch('http://localhost:3010/login', {
+      const response = await fetch('http://localhost:3010/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

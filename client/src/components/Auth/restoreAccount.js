@@ -16,7 +16,7 @@ const RestoreAccount = () => {
         }
 
         try {
-            const response = await fetch('http://localhost:3010/resetAccount/send-otp', {
+            const response = await fetch('http://localhost:3010/auth/resetAccount/send-otp', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

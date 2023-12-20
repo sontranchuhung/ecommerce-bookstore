@@ -6,15 +6,16 @@ const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const mongoose = require('mongoose'); 
 
-
-const { MongoClient } = require('mongodb');
 const uri = process.env.MONGODB_URI;
+mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+const db = mongoose.connection;
+db.on('error', console.error.bind(console, 'MongoDB connection error:'));
+db.once('open', () => {
+  console.log('Connected to the MongoDB database');
+});
 
-const loginRouter = require('./api/auth/login'); 
-const loginTokenCheck = require('./api/auth/loginToken.js')
-const registerRouter = require('./api/auth/register.js')
-const resetAccountRouter = require('./api/auth/resetAccount.js')
 
 const app = express();
 app.use(cors({
@@ -23,7 +24,6 @@ app.use(cors({
 }));
 
 app.use(cookieParser());
-
 const port = process.env.PORT || 3010;
 app.use(bodyParser.json());
 
@@ -32,10 +32,11 @@ app.get('/', (req, res) => {
   res.send('Hello, Express!');
 });
 
-app.use('/login', loginRouter);
-app.use('/validateLoginToken', loginTokenCheck)
-app.use('/register', registerRouter);
-app.use('/resetAccount', resetAccountRouter)
+const authController = require('./controllers/AuthController');
+app.use('/auth', authController);
+
+const checkoutController = require('./controllers/CheckoutController');
+app.use('/checkout', checkoutController);
 
 // Start the server
 app.listen(port, () => {
