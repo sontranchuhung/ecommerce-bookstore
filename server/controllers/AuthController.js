@@ -142,7 +142,7 @@ const generateOTP = () => {
 const otpStore = {};
 
 // Send OPT Route
-router.post('/send-otp', async (req, res) => {
+router.post('/resetAccount/send-otp', async (req, res) => {
     const { email } = req.body;
 
     if (!email) {
@@ -158,7 +158,7 @@ router.post('/send-otp', async (req, res) => {
 });
 
 // Verifying OTP Route
-router.post('/verify-otp', (req, res) => {
+router.post('/resetAccount/verify-otp', (req, res) => {
     const { email, otp } = req.body;
 
     if (!email || !otp) {
@@ -173,7 +173,7 @@ router.post('/verify-otp', (req, res) => {
 });
 
 // Resetting account password Route
-router.post('/reset-password', async (req, res) => {
+router.post('/resetAccount/reset-password', async (req, res) => {
     const { email, password } = req.body;
 
     console.log('Received reset password request for email:', email);

@@ -15,12 +15,12 @@ const ProductView = () => {
   const fetchProduct = async (id) => {
     const response = await commerce.products.retrieve(id);
     console.log({ response });
-    const { name, price, media, quantity, description } = response;
+    const { name, price, image, quantity, description } = response;
     setProduct({
       name,
       quantity,
       description,
-      src: media.source,
+      src: image.url,
       price: price.formatted_with_symbol,
     });
   };

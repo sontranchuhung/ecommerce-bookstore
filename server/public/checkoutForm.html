@@ -1,100 +1,52 @@
+<!-- test.html -->
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Stripe Checkout</title>
-  <script src="https://js.stripe.com/v3/"></script>
+    <meta charset="UTF-8">
+    <title>Stripe Payment Test</title>
+    <script src="https://js.stripe.com/v3/"></script>
 </head>
 <body>
+    <form id="payment-form">
+        <div id="card-element"><!--Stripe.js injects the Card Element--></div>
+        <button id="submit-button">Pay</button>
+    </form>
 
-<h1>Stripe Checkout Example</h1>
+    <script>
+        var stripe = Stripe('pk_test_51ONVZRHaXOt9bStwsG9e4O3JPou7Xo2EgICkdrgQ4ACQNu3aMugNWOsPlz5McIhMQp8bq1It3WJumbTr4g8US26F00B4PP0Jnv');
+        var elements = stripe.elements();
+        var card = elements.create('card');
+        card.mount('#card-element');
 
-<div id="error-message" style="color: red;"></div>
+        var form = document.getElementById('payment-form');
+        form.addEventListener('submit', function(event) {
+            event.preventDefault();
 
-<form id="payment-form">
-  <label for="card-element">
-    Credit or debit card
-  </label>
-  <div id="card-element">
-    <!-- A Stripe Element will be inserted here. -->
-  </div>
+            console.log('Form submitted'); // Add a console log here
 
-  <!-- Used to display form errors. -->
-  <div id="card-errors" role="alert"></div>
+            fetch('http://localhost:3010/checkout/create-payment-intent', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Payment Intent data:', data); // Add a console log here
 
-  <button type="submit">Submit Payment</button>
-</form>
-
-<script>
-  const stripe = Stripe('pk_test_51ONVZRHaXOt9bStwsG9e4O3JPou7Xo2EgICkdrgQ4ACQNu3aMugNWOsPlz5McIhMQp8bq1It3WJumbTr4g8US26F00B4PP0Jnv');
-  const elements = stripe.elements();
-
-  const card = elements.create('card');
-  card.mount('#card-element');
-
-  card.addEventListener('change', function(event) {
-    const displayError = document.getElementById('card-errors');
-    if (event.error) {
-      displayError.textContent = event.error.message;
-    } else {
-      displayError.textContent = '';
-    }
-  });
-
-  const form = document.getElementById('payment-form');
-  form.addEventListener('submit', function(event) {
-    event.preventDefault();
-
-    // Create a PaymentIntent on your server
-    fetch('http://localhost:3010/checkout/create-payment-intent', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ amount: 1000, currency: 'usd' }), // Adjust amount and currency as needed
-    })
-    .then(response => response.json())
-    .then(data => {
-      const paymentIntentId = data.clientSecret;
-
-      // Confirm the PaymentIntent with the payment method ID
-      stripe.confirmCardPayment(paymentIntentId, {
-        payment_method: {
-          card: card,
-        },
-      })
-      .then(result => {
-        if (result.error) {
-          const errorElement = document.getElementById('error-message');
-          errorElement.textContent = result.error.message;
-        } else {
-          // The payment has been processed successfully
-          console.log('Payment succeeded:', result.paymentIntent);
-
-          // After successful payment, trigger server-side processing
-          fetch('http://localhost:3010/checkout/process-payment', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ paymentIntentId: result.paymentIntent.id }),
-          })
-          .then(response => response.json())
-          .then(processPaymentData => {
-            // Handle the response from the server
-            console.log('Server response after processing payment:', processPaymentData);
-          })
-          .catch(error => {
-            console.error('Error processing payment on the server:', error);
-          });
-        }
-      });
-    })
-    .catch(error => {
-      console.error('Server error:', error);
-    });
-  });
-</script>
+                return stripe.confirmCardPayment(data.clientSecret, {
+                    payment_method: { card: card }
+                });
+            })
+            .then(result => {
+                if (result.error) {
+                    console.log('Payment error:', result.error.message); // Add a console log here
+                } else {
+                    if (result.paymentIntent.status === 'succeeded') {
+                        console.log('Payment succeeded!'); // Add a console log here
+                    }
+                }
+            });
+        });
+    </script>
 </body>
 </html>

@@ -17,21 +17,28 @@ const Checkout = ({ cart, onCaptureCheckout, order, error, isLoggedIn }) => {
   const history = useHistory();
 
   useEffect(() => {
-    if (!isLoggedIn) {
-      // Redirect the user to the login page if not logged in
-      history.push('/login');
-    } else if (cart.id) {
-      const generateToken = async () => {
+    const fetchCheckoutToken = async () => {
+      if (!isLoggedIn) {
+        history.push('/login');
+      } else if (cart.id) {
         try {
-          const token = await commerce.checkout.generateToken(cart.id, { type: 'cart' });
-          setCheckoutToken(token);
-        } catch {
+          const response = await fetch('http://localhost:3010/checkout/create-checkout-token', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ cartId: cart.id }),
+          });
+          const data = await response.json();
+          setCheckoutToken(data.token);
+        } catch (error) {
+          console.error('Error fetching checkout token:', error);
           if (activeStep !== steps.length) history.push('/');
         }
-      };
+      }
+    };
 
-      generateToken();
-    }
+    fetchCheckoutToken();
   }, [cart, activeStep, history, isLoggedIn]);
 
   const nextStep = () => setActiveStep((prevActiveStep) => prevActiveStep + 1);
@@ -39,7 +46,6 @@ const Checkout = ({ cart, onCaptureCheckout, order, error, isLoggedIn }) => {
 
   const test = (data) => {
     setShippingData(data);
-
     nextStep();
   };
 
@@ -70,7 +76,7 @@ const Checkout = ({ cart, onCaptureCheckout, order, error, isLoggedIn }) => {
   }
 
   const Form = () => (activeStep === 0
-    ? <AddressForm checkoutToken={checkoutToken} nextStep={nextStep} setShippingData={setShippingData} test={test} />
+    ? <AddressForm checkoutToken={checkoutToken} nextStep={nextStep} setShippingData={setShippingData} test={test}/>
     : <PaymentForm checkoutToken={checkoutToken} nextStep={nextStep} backStep={backStep} shippingData={shippingData} onCaptureCheckout={onCaptureCheckout} />);
 
   return (

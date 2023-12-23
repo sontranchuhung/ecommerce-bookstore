@@ -33,7 +33,7 @@ const App = () => {
   const [cart, setCart] = useState({});
   const [order, setOrder] = useState({});
   const [errorMessage, setErrorMessage] = useState("");
-  const [isLoggedIn, setIsLoggedIn] = useState(false); 
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   const handleLoginSuccess = () => {
     setIsLoggedIn(true);
@@ -81,89 +81,62 @@ const App = () => {
     setBioProducts(data);
   };
 
-  // const fetchCart = async () => {
-  //   setCart(await commerce.cart.retrieve());
-  // };
-
-  // const handleAddToCart = async (productId, quantity) => {
-  //   const item = await commerce.cart.add(productId, quantity);
-
-  //   setCart(item.cart);
-  // };
-
-  // const handleUpdateCartQty = async (lineItemId, quantity) => {
-  //   const response = await commerce.cart.update(lineItemId, { quantity });
-
-  //   setCart(response.cart);
-  // };
-
-  // const handleRemoveFromCart = async (lineItemId) => {
-  //   const response = await commerce.cart.remove(lineItemId);
-
-  //   setCart(response.cart);
-  // };
-
-  // const handleEmptyCart = async () => {
-  //   const response = await commerce.cart.empty();
-
-  //   setCart(response.cart);
-  // };
-
   const fetchCart = async () => {
     console.log("Fetching cart...");
     const retrievedCart = await commerce.cart.retrieve();
     console.log("Retrieved cart:", retrievedCart);
     setCart(retrievedCart);
   };
-  
+
   const handleAddToCart = async (productId, quantity) => {
     console.log(`Adding ${quantity} of product ${productId} to the cart...`);
     const item = await commerce.cart.add(productId, quantity);
     console.log("Added item to cart:", item);
-    setCart((prevCart) => {
-        return {
-        ...prevCart,
-        ...item.cart,
-      };
-    });  };
-  
+
+    console.log("Total items: ", item)
+    setCart(item);
+  };
+
   const handleUpdateCartQty = async (lineItemId, quantity) => {
     console.log(`Updating quantity of item ${lineItemId} to ${quantity}...`);
     const response = await commerce.cart.update(lineItemId, { quantity });
-    console.log("Updated cart:", response.cart);
-    setCart(response.cart);
+    console.log("Updated cart:", response);
+    setCart(response);
   };
 
   const handleRemoveFromCart = async (lineItemId) => {
     const response = await commerce.cart.remove(lineItemId);
-    console.log("Removed item from cart. New cart:", response.cart);
-    setCart(response.cart);
+    console.log("Removed item from cart. New cart:", response);
+    setCart(response);
   };
 
   const handleEmptyCart = async () => {
     const response = await commerce.cart.empty();
-    console.log("Emptied cart. New cart:", response.cart);
-    setCart(response.cart);
+    console.log("Emptied cart. New cart:", response);
+    setCart(response);
   };
-  
+
 
   const refreshCart = async () => {
     const newCart = await commerce.cart.refresh();
 
     setCart(newCart);
   };
-
+   
+      
   const handleCaptureCheckout = async (checkoutTokenId, newOrder) => {
-    try {
+    console.log("Trying to capture checkout with checkoutTokenId: ", checkoutTokenId);
+    console.log("Order: ", newOrder);
+    try {   
       const incomingOrder = await commerce.checkout.capture(
         checkoutTokenId,
         newOrder
-      );
-
+      );  
       setOrder(incomingOrder);
-
       refreshCart();
+      console.log('Order set:', incomingOrder, '. Cart refreshed.');
     } catch (error) {
+      console.error('Capture error:', error);
       setErrorMessage(error.data.error.message);
     }
   };
@@ -191,7 +164,6 @@ const App = () => {
                 handleDrawerToggle={handleDrawerToggle}
                 isLoggedIn={isLoggedIn}
                 onLogout={handleLogout}
-                // cart={cart}
               />
               <Switch>
                 <Route exact path="/">
@@ -264,8 +236,9 @@ const App = () => {
               </Switch>
             </div>
           </Router>
+          <Footer />
 
-          {window.location.pathname !== '*' && window.location.pathname !== '/login' && window.location.pathname !== '/register' && window.location.pathname !== '/forgot-password' && window.location.pathname !== '/verify-account' && window.location.pathname !== '/reset-password' && <Footer />}
+          {/* {window.location.pathname !== '*' && window.location.pathname !== '/login' && window.location.pathname !== '/register' && window.location.pathname !== '/forgot-password' && window.location.pathname !== '/verify-account' && window.location.pathname !== '/reset-password' && <Footer />} */}
         </>
       ) : (
         <div className="loader">

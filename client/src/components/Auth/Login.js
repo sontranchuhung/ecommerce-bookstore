@@ -96,7 +96,6 @@ const Login = ({ onLoginSuccess }) => {
         const token = data.token;
         // console.log('Token:', token);
 
-
         document.cookie = `token=${token}; path=/;`;
 
         // Successful login

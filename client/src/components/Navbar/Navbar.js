@@ -15,7 +15,7 @@ import useStyles from "./styles";
 
 const Navbar = ({ totalItems, isLoggedIn, onLogout }) => {
   const classes = useStyles();
-
+  console.log("Navbar total items: ",totalItems);
   return (
     <div>
       <AppBar position="fixed" className={classes.appBar} color="inherit">
