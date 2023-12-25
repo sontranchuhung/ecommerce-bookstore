@@ -20,7 +20,7 @@ db.once('open', () => {
 const app = express();
 app.use(cors({
   origin: 'http://localhost:3000', 
-  credentials: true, // Allow credentials (cookies) to be sent with requests
+  credentials: true
 }));
 
 app.use(cookieParser());

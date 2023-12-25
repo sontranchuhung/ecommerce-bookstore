@@ -12,8 +12,6 @@ router.post('/login', async (req, res) => {
 
         const { email, password } = req.body;
 
-
-
         const db = mongoose.connection;
 
         console.log('Searching for user with email:', email);
@@ -38,13 +36,14 @@ router.post('/login', async (req, res) => {
         console.log('Password matched. Generating token...');
 
         const token = jwt.sign({ email: user.email }, process.env.JWT_SECRET, { expiresIn: '1h' });
-
+        
         console.log('Token generated:', token);
 
-        // Return the token in the response
-        // res.cookie('token', token, { httpOnly: true });
+        // res.status(200).json({ message: 'Authentication successful', token });
 
-        res.status(200).json({ message: 'Authentication successful', token });
+        res.cookie('jwt', token, { httpOnly: true, maxAge: 3600000 }); 
+
+        res.status(200).json({ message: 'Authentication successful' });
 
     } catch (error) {
         console.error('Error during login:', error);
@@ -52,38 +51,27 @@ router.post('/login', async (req, res) => {
     }
 });
 
-router.post('/loginToken', async (req, res) => {
-    console.log('validateLoginToken triggered');
-
-    const authorizationHeader = req.headers['authorization'];
-
-    if (!authorizationHeader || !authorizationHeader.startsWith('Bearer ')) {
-        console.log('401: No token provided');
-        return res.status(401).json({ isValid: false, error: 'No token provided' });
+router.get('/protected', (req, res) => {
+    const token = req.cookies.jwt;
+  
+    if (!token) {
+      return res.status(401).json({ message: 'Unauthorized' });
     }
-
-    const token = authorizationHeader.substring('Bearer '.length);
-
-    console.log(`validateLoginToken received from client: ${token}`);
-    try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        console.log('200: Token is valid');
-
-        // Cac chuc nang khac de check 
-
-        return res.status(200).json({ isValid: true });
-    } catch (error) {
-        console.error('Error during token validation:', error);
-
-        if (error.name === 'TokenExpiredError') {
-            // Handle token expiration
-            return res.status(401).json({ isValid: false, error: 'Token has expired' });
+  
+    jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+      if (err) {
+        if (err.name === 'TokenExpiredError') {
+          return res.status(401).json({ message: 'Token has expired' });
+        } else {
+          return res.status(401).json({ message: 'Unauthorized' });
         }
+      }
+  
+      // Token is valid; `decoded` contains the decoded payload
+      res.json({ message: 'Protected resource accessed', user: decoded });
+    });
+  });
 
-        // Handle other verification errors
-        return res.status(401).json({ isValid: false, error: 'Invalid token' });
-    }
-});
 
 router.post('/register', async (req, res) => {
     try {
@@ -112,7 +100,7 @@ router.post('/register', async (req, res) => {
         }
 
         // Generate a salt and hash the password
-        const saltRounds = 10; // You can adjust the number of salt rounds as needed
+        const saltRounds = process.env.SALT_ROUNDS; // You can adjust the number of salt rounds as needed
         const salt = await bcrypt.genSalt(saltRounds);
         const hashedPassword = await bcrypt.hash(password, salt);
 
@@ -128,6 +116,7 @@ router.post('/register', async (req, res) => {
         res.status(500).json({ error: 'Internal Server Error' });
     }
 });
+
 
 
 const generateOTP = () => {

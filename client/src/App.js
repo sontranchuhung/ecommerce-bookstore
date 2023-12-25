@@ -25,7 +25,7 @@ import Biography from "./components/Bio/Biography";
 
 const App = () => {
   const [mobileOpen, setMobileOpen] = React.useState(false);
-  const [products, setProducts] = useState([]);
+  const [products, setProducts] = useState([]); 
   const [mangaProducts, setMangaProducts] = useState([]);
   const [fictionProducts, setFictionProducts] = useState([]);
   const [bioProducts, setBioProducts] = useState([]);
@@ -37,6 +37,11 @@ const App = () => {
 
   const handleLoginSuccess = () => {
     setIsLoggedIn(true);
+    if (cart.total_items === 0) {
+      history.push('/');
+    } else {
+      history.push('/checkout');
+    }
   };
 
   const handleLogout = () => {
@@ -45,7 +50,6 @@ const App = () => {
 
   const fetchProducts = async () => {
     const { data } = await commerce.products.list();
-
     setProducts(data);
   };
 
@@ -159,12 +163,14 @@ const App = () => {
           <Router>
             <div style={{ display: "flex" }}>
               <CssBaseline />
-              <Navbar
-                totalItems={cart.total_items}
-                handleDrawerToggle={handleDrawerToggle}
-                isLoggedIn={isLoggedIn}
-                onLogout={handleLogout}
-              />
+              {location.pathname !== '/login' && location.pathname !== '/register' && location.pathname !== '/forgot-password' && location.pathname !== '/verify-account' && location.pathname !== '/reset-password' && (
+                <Navbar
+                  totalItems={cart.total_items}
+                  handleDrawerToggle={handleDrawerToggle}
+                  isLoggedIn={isLoggedIn}
+                  onLogout={handleLogout}
+                />
+              )}
               <Switch>
                 <Route exact path="/">
                   <Products
@@ -236,9 +242,9 @@ const App = () => {
               </Switch>
             </div>
           </Router>
-          <Footer />
-
-          {/* {window.location.pathname !== '*' && window.location.pathname !== '/login' && window.location.pathname !== '/register' && window.location.pathname !== '/forgot-password' && window.location.pathname !== '/verify-account' && window.location.pathname !== '/reset-password' && <Footer />} */}
+          {location.pathname !== '/login' && location.pathname !== '/register' && location.pathname !== '/forgot-password' && location.pathname !== '/verify-account' && location.pathname !== '/reset-password' && (
+            <Footer />
+          )}
         </>
       ) : (
         <div className="loader">

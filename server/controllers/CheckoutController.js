@@ -14,7 +14,6 @@ const commerce = new Commerce(process.env.CHEC_SECRET, true);
 
 router.post('/create-checkout-token', async (req, res) => {
   const { cartId } = req.body;
-
   try {
     const token = await commerce.checkout.generateToken(cartId, { type: 'cart' });
     res.json({ token });
@@ -49,7 +48,7 @@ router.post('/webhook', (req, res) => {
   let event;
 
   try {
-    event = stripe.webhooks.constructEvent(payload, sig, process.env.STRIPE_ENDPOINT_SECRET);
+    event = stripe.webhooks.constructEvent(payload, sig, process.env.STRIPE_SECRET);
   } catch (err) {
     console.error('Webhook Error:', err.message);
     return res.status(400).send(`Webhook Error: ${err.message}`);
