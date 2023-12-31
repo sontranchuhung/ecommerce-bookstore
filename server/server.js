@@ -22,6 +22,10 @@ app.use(cors({
   origin: 'http://localhost:3000', 
   credentials: true
 }));
+app.use(
+  '/checkout/webhook',
+  bodyParser.raw({ type: 'application/json' })
+);
 
 app.use(cookieParser());
 const port = process.env.PORT || 3010;

@@ -41,6 +41,10 @@ const Checkout = ({ cart, onCaptureCheckout, order, error, isLoggedIn }) => {
     fetchCheckoutToken();
   }, [cart, activeStep, history, isLoggedIn]);
 
+  useEffect(() => {
+    console.log("Checkout component error prop:", error); 
+  }, [error]);
+
   const nextStep = () => setActiveStep((prevActiveStep) => prevActiveStep + 1);
   const backStep = () => setActiveStep((prevActiveStep) => prevActiveStep - 1);
 
@@ -56,6 +60,12 @@ const Checkout = ({ cart, onCaptureCheckout, order, error, isLoggedIn }) => {
         <Divider className={classes.divider} />
         <Typography variant="subtitle2">Order ref: {order.customer_reference}</Typography>
       </div>
+      <br />
+      <Button component={Link} variant="outlined" type="button" to="/">Back to home</Button>
+    </>
+  ) : error ? (
+    <>
+      <Typography variant="h5">Error: {error}</Typography>
       <br />
       <Button component={Link} variant="outlined" type="button" to="/">Back to home</Button>
     </>

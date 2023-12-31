@@ -55,7 +55,7 @@ const VerifyAccount = () => {
 
     return (
 
-        <Container style={{ marginTop: '40px' }} maxWidth="sm">
+        <Container style={{ marginTop: '40px', border: '1px solid #ccc', borderRadius: '5px', padding: '20px' }} maxWidth="sm">
             <Box my={4}>
                 <Typography variant="h4">Verify Account</Typography>
                 <Typography variant="subtitle1">{`Email: ${email}`}</Typography>

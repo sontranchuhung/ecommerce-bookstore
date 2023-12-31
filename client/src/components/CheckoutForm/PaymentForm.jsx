@@ -19,21 +19,37 @@ const PaymentForm = ({
   onCaptureCheckout,
 }) => {
   const fetchClientSecret = async () => {
-    console.log("checkout token: ",checkoutToken);
+    console.log("checkout token: ", checkoutToken);
     const response = await fetch('http://localhost:3010/checkout/create-payment-intent', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        // amount: 10000, 
         amount: checkoutToken.total.raw,
         currency: 'vnd',
       }),
     });
     const data = await response.json();
-    console.log("Received client secret: ", data.clientSecret);
     return data.clientSecret;
+  };
+
+  const postOrderData = async (orderData, checkoutToken) => {
+    try {
+      const response = await fetch('http://localhost:3010/checkout/success-order', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          orderData: orderData,
+          checkoutToken: checkoutToken.id,
+        }),
+      });
+      return await response.json();
+    } catch (error) {
+      console.error("Error posting order data:", error);
+    }
   };
 
   const handleSubmit = async (event, elements, stripe) => {
@@ -43,7 +59,6 @@ const PaymentForm = ({
 
     const clientSecret = await fetchClientSecret();
     const cardElement = elements.getElement(CardElement);
-    console.log("Attempting to confirm card payment with client secret: ", clientSecret);
     const result = await stripe.confirmCardPayment(clientSecret, {
       payment_method: {
         card: cardElement,
@@ -54,10 +69,14 @@ const PaymentForm = ({
       },
     });
 
-    //Check paymentIntent.status nen duoc xu ly boi Server 
     if (result.error) {
       console.log("[error]", result.error);
+      const errMsg = result.error.message + ' (' + result.error.decline_code + ')';
+      console.log("Calling onCaptureCheckout with errMsg:", errMsg); // Log the error message being passed
+      onCaptureCheckout(checkoutToken.id, null, errMsg);
+      nextStep();
     } else {
+      const errMsg = '';
       if (result.paymentIntent.status === 'succeeded') {
         // Construct order data 
         console.log("Checkout Token: ", checkoutToken);
@@ -90,11 +109,15 @@ const PaymentForm = ({
             },
           },
         };
+        // Post the order data to the server
+        await postOrderData(orderData, checkoutToken);
 
-        onCaptureCheckout(checkoutToken.id, orderData);
+        // Capturing the checkout (add order to commercejs and fetch customer)
+        onCaptureCheckout(checkoutToken.id, orderData, errMsg);
         nextStep();
       }
     }
+
   };
 
   return (

@@ -2,26 +2,20 @@
 const express = require('express');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
+const nodemailer = require('nodemailer');
+const User = require('../models/User.js');
 const router = express.Router();
 const mongoose = require('mongoose');
 const db = mongoose.connection;
 
 router.post('/login', async (req, res) => {
     try {
-        console.log('Received login request:', req.body);
-
         const { email, password } = req.body;
 
-        const db = mongoose.connection;
-
-        console.log('Searching for user with email:', email);
-
-        const credentialCollection = db.collection('users');
-
-        const user = await credentialCollection.findOne({ email });
+        const user = await User.findOne({ email });
 
         if (!user) {
-            console.log('User not found');
             return res.status(401).json({ error: 'Invalid credentials' });
         }
 
@@ -37,10 +31,6 @@ router.post('/login', async (req, res) => {
 
         const token = jwt.sign({ email: user.email }, process.env.JWT_SECRET, { expiresIn: '1h' });
         
-        console.log('Token generated:', token);
-
-        // res.status(200).json({ message: 'Authentication successful', token });
-
         res.cookie('jwt', token, { httpOnly: true, maxAge: 3600000 }); 
 
         res.status(200).json({ message: 'Authentication successful' });
@@ -66,7 +56,7 @@ router.get('/protected', (req, res) => {
           return res.status(401).json({ message: 'Unauthorized' });
         }
       }
-  
+
       // Token is valid; `decoded` contains the decoded payload
       res.json({ message: 'Protected resource accessed', user: decoded });
     });
@@ -75,39 +65,19 @@ router.get('/protected', (req, res) => {
 
 router.post('/register', async (req, res) => {
     try {
-        console.log('Received register request:', req.body);
-
         const { email, password } = req.body;
 
-        // Validate email and password (basic validation)
-        if (!email || !password) {
-            return res.status(400).json({ error: 'Email and password are required' });
-        }
-
-        // Use the existing Mongoose connection
-        const db = mongoose.connection;
-
-        console.log('Checking if user already exists with email:', email);
-
-        // Use db.collection to interact with the database
-        const credentialCollection = db.collection('users');
-
-        // Check if the user already exists
-        const existingUser = await credentialCollection.findOne({ email });
+        const existingUser = await User.findOne({ email });
         if (existingUser) {
-            console.log('User already exists with email:', email);
             return res.status(409).json({ error: 'User already exists' });
         }
 
-        // Generate a salt and hash the password
-        const saltRounds = process.env.SALT_ROUNDS; // You can adjust the number of salt rounds as needed
+        const saltRounds = parseInt(process.env.SALT_ROUNDS) || 10;
         const salt = await bcrypt.genSalt(saltRounds);
         const hashedPassword = await bcrypt.hash(password, salt);
 
-        // Create a new user
-        await credentialCollection.insertOne({ email, hashedPassword, salt });
-
-        console.log('User registered successfully:', email);
+        const newUser = new User({ email, hashedPassword, salt });
+        await newUser.save();
 
         res.status(201).json({ message: 'User registered successfully' });
 
@@ -120,11 +90,26 @@ router.post('/register', async (req, res) => {
 
 
 const generateOTP = () => {
-    let otp = '';
-    for (let i = 0; i < 6; i++) {
-        otp += Math.floor(Math.random() * 10);
-    }
-    return otp;
+    return crypto.randomInt(100000, 999999).toString();
+};
+
+const sendEmail = async (email, subject, text) => {
+    const transporter = nodemailer.createTransport({
+        host: 'smtp.gmail.com',
+        port: 587,
+        secure: false,        
+        auth: {
+            user: process.env.EMAIL_USERNAME,
+            pass: process.env.EMAIL_PASSWORD,
+        },
+    });
+
+    await transporter.sendMail({
+        from: 'noreply.bookstore.app',
+        to: email,
+        subject: subject,
+        text: text,
+    });
 };
 
 // Temporary store for OTPs 
@@ -141,9 +126,13 @@ router.post('/resetAccount/send-otp', async (req, res) => {
     const otp = generateOTP();
     otpStore[email] = otp;
 
-    console.log(`OTP for ${email}: ${otp}`);
-
-    res.status(200).send('OTP sent successfully');
+    try {
+        await sendEmail(email, 'Your OTP', `Your OTP is: ${otp}`);
+        res.status(200).send('OTP sent successfully');
+    } catch (error) {
+        console.error(`Error sending OTP to ${email}:`, error);
+        res.status(500).send('Error sending OTP');
+    }
 });
 
 // Verifying OTP Route
@@ -172,7 +161,7 @@ router.post('/resetAccount/reset-password', async (req, res) => {
         return res.status(400).send('Email and password are required');
     }
 
-    const saltRounds = 10; // You can adjust the number of salt rounds as needed
+    const saltRounds = 10; 
 
     // Use the existing Mongoose connection
     const db = mongoose.connection;

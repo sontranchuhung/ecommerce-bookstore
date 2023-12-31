@@ -25,7 +25,7 @@ import Biography from "./components/Bio/Biography";
 
 const App = () => {
   const [mobileOpen, setMobileOpen] = React.useState(false);
-  const [products, setProducts] = useState([]); 
+  const [products, setProducts] = useState([]);
   const [mangaProducts, setMangaProducts] = useState([]);
   const [fictionProducts, setFictionProducts] = useState([]);
   const [bioProducts, setBioProducts] = useState([]);
@@ -37,11 +37,6 @@ const App = () => {
 
   const handleLoginSuccess = () => {
     setIsLoggedIn(true);
-    if (cart.total_items === 0) {
-      history.push('/');
-    } else {
-      history.push('/checkout');
-    }
   };
 
   const handleLogout = () => {
@@ -126,24 +121,29 @@ const App = () => {
 
     setCart(newCart);
   };
-   
-      
-  const handleCaptureCheckout = async (checkoutTokenId, newOrder) => {
-    console.log("Trying to capture checkout with checkoutTokenId: ", checkoutTokenId);
-    console.log("Order: ", newOrder);
-    try {   
-      const incomingOrder = await commerce.checkout.capture(
-        checkoutTokenId,
-        newOrder
-      );  
-      setOrder(incomingOrder);
-      refreshCart();
-      console.log('Order set:', incomingOrder, '. Cart refreshed.');
+
+
+  const handleCaptureCheckout = async (checkoutTokenId, newOrder, errMsg) => {
+    try {
+      console.log("handleCaptureCheckout called with errMsg:", errMsg); // Check the error message received
+      if (errMsg === "") {
+        const incomingOrder = await commerce.checkout.capture(
+          checkoutTokenId,
+          newOrder
+        );
+        setOrder(incomingOrder);
+        refreshCart();
+      } else {
+        throw new Error(errMsg);
+      }
     } catch (error) {
-      console.error('Capture error:', error);
-      setErrorMessage(error.data.error.message);
+      console.log("Setting error message:", error.message); // Log the error being set
+      setErrorMessage(error.message);
     }
   };
+  
+  
+  
 
   useEffect(() => {
     fetchProducts();
@@ -181,7 +181,10 @@ const App = () => {
                   />
                 </Route>
                 <Route path='/login'>
-                  <Login onLoginSuccess={handleLoginSuccess} />
+                  <Login
+                    onLoginSuccess={handleLoginSuccess}
+                    totalItems={cart.total_items}
+                  />
                 </Route>
                 <Route path='/register'>
                   <Register />

@@ -4,10 +4,13 @@
 /node_modules
 /client/node_modules
 /client/.env
+/client/public
 /server/node_modules
 /server/test.js
 /server/.env
 /server/stripe.exe
+/server/ngrok.exe
+/server/public
 
 /.pnp
 .pnp.js

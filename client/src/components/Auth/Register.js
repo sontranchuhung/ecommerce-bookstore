@@ -66,6 +66,9 @@ const Register = () => {
         }
       };
       
+      const handleToLogin = () => {
+        setCountdown(0); 
+    };
 
     useEffect(() => {
         if (countdown === 0) {
@@ -74,59 +77,66 @@ const Register = () => {
     }, [countdown]);
 
     return (
-        <Container style={{ marginTop: '40px' }} maxWidth="sm">
-            <Box my={4}>
-                <Typography variant="h4">Register</Typography>
-                <form onSubmit={handleSubmit} noValidate>
-                    <TextField
-                        label="Email"
-                        type="email"
-                        name="email"
-                        value={formData.email}
-                        onChange={handleChange}
-                        fullWidth
-                        margin="normal"
-                        variant="outlined"
-                    />
-                    <TextField
-                        label="Password"
-                        type="password"
-                        name="password"
-                        value={formData.password}
-                        onChange={handleChange}
-                        fullWidth
-                        margin="normal"
-                        variant="outlined"
-                    />
-                    <TextField
-                        label="Confirm Password"
-                        type="password"
-                        name="confirmPassword"
-                        value={formData.confirmPassword}
-                        onChange={handleChange}
-                        fullWidth
-                        margin="normal"
-                        variant="outlined"
-                    />
-                    {error && (
-                        <Typography color="error">{error}</Typography>
-                    )}
-                    {successMessage && (
-                        <Typography color="primary">{successMessage} ({countdown})</Typography>
-                    )}
-                    <Button
-                        type="submit"
-                        color="primary"
-                        variant="contained"
-                        fullWidth
-                        style={{ marginTop: 16 }}
-                    >
-                        Register
-                    </Button>
-                </form>
-            </Box>
-        </Container>
-    );
+      <Container style={{ marginTop: '40px', border: '1px solid #ccc', borderRadius: '5px', padding: '20px' }} maxWidth="sm">
+          <Box my={4} display="flex" flexDirection="column" alignItems="center">
+              <Typography variant="h4">Register</Typography>
+              <form onSubmit={handleSubmit} noValidate style={{ width: '100%' }}>
+                  <TextField
+                      label="Email"
+                      type="email"
+                      name="email"
+                      value={formData.email}
+                      onChange={handleChange}
+                      fullWidth
+                      margin="normal"
+                      variant="outlined"
+                  />
+                  <TextField
+                      label="Password"
+                      type="password"
+                      name="password"
+                      value={formData.password}
+                      onChange={handleChange}
+                      fullWidth
+                      margin="normal"
+                      variant="outlined"
+                  />
+                  <TextField
+                      label="Confirm Password"
+                      type="password"
+                      name="confirmPassword"
+                      value={formData.confirmPassword}
+                      onChange={handleChange}
+                      fullWidth
+                      margin="normal"
+                      variant="outlined"
+                  />
+                  {error && (
+                      <Typography color="error">{error}</Typography>
+                  )}
+                  {successMessage && (
+                      <Typography color="primary">{successMessage} ({countdown})</Typography>
+                  )}
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '16px' }}>
+                      <Button
+                          variant="outlined"
+                          color="primary"
+                          onClick={handleToLogin}
+                          >
+                          Back to Login
+                      </Button>
+                      <Button
+                          type="submit"
+                          color="primary"
+                          variant="contained"
+                      >
+                          Register
+                      </Button>
+                  </div>
+              </form>
+          </Box>
+      </Container>
+  );
 }
 
 export default Register;

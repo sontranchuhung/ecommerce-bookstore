@@ -27,7 +27,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const Login = ({ onLoginSuccess }) => {
+const Login = ({ onLoginSuccess, totalItems }) => {
   const history = useHistory();
 
   const [email, setEmail] = useState('');
@@ -51,6 +51,12 @@ const Login = ({ onLoginSuccess }) => {
       if (response.ok) {
         console.log('Token is valid, go to checkout page!');
         onLoginSuccess();
+
+        if (totalItems === 0) {
+          history.push('/');
+        } else {
+          history.push('/checkout');
+        }
       } else {
         console.log("failed check authentication (fetch protected return response != ok)");
       }
